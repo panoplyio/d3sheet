@@ -261,6 +261,16 @@
         var starty = start[ 1 ];
         var endy = end[ 1 ];
 
+        // reversed order
+        if ( startx > endx ) {
+            endx = startx;
+            startx = end[ 0 ];
+        }
+        if ( starty > endy ) {
+            endy = starty;
+            starty = end[ 1 ];
+        }
+
         // find the relevant rows in the range of starty-endy
         var selector = [
             "tbody > tr",
