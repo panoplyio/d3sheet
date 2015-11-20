@@ -1,4 +1,6 @@
 (function () {
+    var SCROLL_SENSITIVITY = 15;
+
     window.d3sheet = function () {
         var columns = [];
 
@@ -38,6 +40,42 @@
             return this;
         }
 
+        var selection = { start: null, end: null }
+        var selectAnimFrame;
+        d3sheet.selection = function () {
+            return {
+                start: function ( xy ) {
+                    if ( !arguments.length ) {
+                        return selection.start;
+                    }
+                    selection.start = xy;
+                    selection.end = xy;
+                    // debug( "Selection", "Start:", xy );
+
+                    cancelAnimationFrame( selectAnimFrame );
+                    selectAnimFrame = requestAnimationFrame( function () {
+                        drawSelection( el, selection.start, selection.end );
+                    })
+
+                    return this;
+                },
+                end: function ( xy ) {
+                    if ( !arguments.length ) {
+                        return selection.end;
+                    }
+                    selection.end = xy;
+                    // debug( "Selection", "End:", xy );
+
+                    cancelAnimationFrame( selectAnimFrame );
+                    selectAnimFrame = requestAnimationFrame( function () {
+                        drawSelection( el, selection.start, selection.end );
+                    })
+
+                    return this;
+                },
+            }
+        }
+
         var scroll = [ 0, 0 ];
         var scrollAnimFrame;
         d3sheet.scroll = function ( xy ) {
@@ -70,12 +108,14 @@
     function draw( that, el, data ) {
         if ( !el.__d3sheet ) {
             el.addEventListener( "mousewheel", onMouseWheel() )
+            el.addEventListener( "mousedown", onMouseDown() )
+            el.addEventListener( "mouseup", onMouseUp() )
+            el.addEventListener( "mousemove", onMouseMove() )
         }
         el.__d3sheet = that;
 
         el = d3.select( el )
             .classed( "d3sheet", true );
-        
 
         var columns = [].concat( that.columns() )
         columns.unshift({
@@ -120,8 +160,10 @@
         rows.enter().append( "tr" );
         var cells = rows.selectAll( "td" )
             .data( function ( d, i ) {
-                return columns.map( function ( col ) {
+                return columns.map( function ( col, j ) {
                     return {
+                        rown: i,
+                        coln: j,
                         v: col.accessor( d, i ),
                     }
                 })
@@ -133,6 +175,38 @@
             })
     }
 
+    function onMouseDown () {
+        return function ( ev ) {
+            this.__selecting = true;
+            ev.preventDefault();
+            var datum = d3.select( ev.target ).datum();
+            this.__d3sheet.selection()
+                .start([ datum.coln, datum.rown ]);
+        }
+    }
+
+    function onMouseUp () {
+        return function ( ev ) {
+            this.__selecting = false;
+            ev.preventDefault();
+            var datum = d3.select( ev.target ).datum();
+            this.__d3sheet.selection()
+                .end([ datum.coln, datum.rown ]);
+        }
+    }
+
+    function onMouseMove () {
+        return function ( ev ) {
+            if ( !this.__selecting ) {
+                return
+            }
+            ev.preventDefault();
+            var datum = d3.select( ev.target ).datum();
+            this.__d3sheet.selection()
+                .end([ datum.coln, datum.rown ]);
+        }
+    }
+
     function onMouseWheel () {
         var deltaX = 0, deltaY = 0;
         return function ( ev ) {
@@ -142,27 +216,73 @@
             deltaX += ev.deltaX;
             deltaY += ev.deltaY;
 
-            debug( "MouseWheel", "X:", deltaX, "Y:", deltaY );
+            // debug( "MouseWheel", "X:", deltaX, "Y:", deltaY );
             var scroll = this.__d3sheet.scroll();
-            if ( deltaX > 15 ) {
+            if ( deltaX > SCROLL_SENSITIVITY ) {
                 scroll[ 0 ] += 1;
                 deltaX = 0;
-            } else if ( deltaX < -15 ) {
+            } else if ( deltaX < -SCROLL_SENSITIVITY ) {
                 scroll[ 0 ] -= 1;
                 deltaX = 0;
             }
 
-            if ( deltaY > 15 ) {
+            if ( deltaY > SCROLL_SENSITIVITY ) {
                 scroll[ 1 ] += 1;
                 deltaY = 0;
-            } else if ( deltaY < -15 ) {
+            } else if ( deltaY < -SCROLL_SENSITIVITY ) {
                 scroll[ 1 ] -= 1;
                 deltaY = 0;
             }
 
             this.__d3sheet.scroll( scroll );
-
         }
+    }
+
+    function drawSelection( el, start, end ) {
+        el = d3.select( el );
+
+        // remove previous selection
+        el.selectAll( ".selected" )
+            .classed( "selected", false );
+
+        // empty selection or deselect
+        if ( !start || !end ) {
+            return;
+        }
+
+        var startx = start[ 0 ];
+        var endx = end[ 0 ];
+        var starty = start[ 1 ];
+        var endy = end[ 1 ];
+
+        // find the relevant rows in the range of starty-endy
+        var selector = [
+            "tbody > tr",
+            ":nth-child(n+" + ( 1 + starty ) + ")",
+            ":nth-child(-n+" + ( 1 + endy ) + ")"
+        ].join( "" );
+        var rows = el.selectAll( selector );
+        
+        // find the relevant columns within these rows in the range
+        // of startx-endx
+        var selector = [
+            "*",
+            ":nth-child(n+" + ( 1 + startx ) + ")",
+            ":nth-child(-n+" + ( 1 + endx ) + ")"
+        ].join( "" );
+        var cells = rows.selectAll( selector );
+        
+        // add the relevant headers to the selection
+        var headers = el.select( "thead > tr" )
+            .selectAll( selector );
+
+        // add the relevant row-numbers to the selection
+        var rownums = rows.selectAll( "td:first-child" );
+
+        // finally, apply the selected class
+        cells.classed( "selected", true );
+        headers.classed( "selected", true );
+        rownums.classed( "selected", true );
     }
 
     function scrollTo( el, x, y ) {

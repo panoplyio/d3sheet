@@ -1,5 +1,5 @@
 .d3sheet {
-    overflow: auto;
+    overflow: hidden;
 }
 
 .d3sheet table {
@@ -29,4 +29,13 @@
 
 .d3sheet th {
     z-index: 100;
+}
+
+.d3sheet td.selected {
+    background: #ecf3ff;
+}
+
+.d3sheet th.selected,
+.d3sheet td.selected:first-child {
+    background: #dddddd;
 }
