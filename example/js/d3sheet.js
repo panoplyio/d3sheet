@@ -50,7 +50,6 @@
                     }
                     selection.start = xy;
                     selection.end = xy;
-                    // debug( "Selection", "Start:", xy );
 
                     cancelAnimationFrame( selectAnimFrame );
                     selectAnimFrame = requestAnimationFrame( function () {
@@ -70,22 +69,22 @@
                     cancelAnimationFrame( selectAnimFrame );
                     selectAnimFrame = requestAnimationFrame( function () {
                         drawSelection( el, selection.start, selection.end );
-                    })
+                    });
 
                     return this;
                 },
             }
         }
 
-        var scroll = [ 0, 0 ];
+        var scroll = [ 1, 1 ];
         var scrollAnimFrame;
         d3sheet.scroll = function ( xy ) {
             if ( arguments.length == 0 ) {
                 return [ scroll[ 0 ], scroll[ 1 ] ]; // copy
             }
 
-            var x = Math.min( this.columns().length - 1, Math.max( 0, xy[ 0 ] ) );
-            var y = Math.max( 0, xy[ 1 ] );
+            var x = Math.min( this.columns().length - 1, Math.max( 1, xy[ 0 ] ) );
+            var y = Math.max( 1, xy[ 1 ] );
 
             window.cancelAnimationFrame( scrollAnimFrame );
 
@@ -131,6 +130,7 @@
         });
 
         columns.forEach( function ( col, i ) {
+            col.rown = 0;
             col.coln = i;
         })
 
@@ -167,7 +167,7 @@
             .data( function ( d, i ) {
                 return columns.map( function ( col, j ) {
                     return {
-                        rown: i,
+                        rown: i + 1,
                         coln: j,
                         v: col.accessor( d, i ),
                     }
@@ -274,8 +274,8 @@
         // find the relevant rows in the range of starty-endy
         var selector = [
             "tbody > tr",
-            ":nth-child(n+" + ( 1 + starty ) + ")",
-            endy == Infinity ? "" : ":nth-child(-n+" + ( 1 + endy ) + ")"
+            ":nth-child(n+" + ( starty ) + ")",
+            endy == Infinity ? "" : ":nth-child(-n+" + ( endy ) + ")"
         ].join( "" );
         var rows = el.selectAll( selector );
         
@@ -283,8 +283,8 @@
         // of startx-endx
         var selector = [
             "*",
-            ":nth-child(n+" + ( 1 + startx ) + ")",
-            endx == Infinity ? "" : ":nth-child(-n+" + ( 1 + endx ) + ")"
+            ":nth-child(n+" + ( startx + 1 ) + ")",
+            endx == Infinity ? "" : ":nth-child(-n+" + ( endx + 1 ) + ")"
         ].join( "" );
         var cells = rows.selectAll( selector );
         
@@ -302,6 +302,11 @@
     }
 
     function scrollTo( el, x, y ) {
+
+        // x-y are 1-indexed
+        x -= 1;
+        y -= 1;
+        
         var headers = el.querySelectorAll( "th" );
         var column = headers[ x + 1 ].getBoundingClientRect();
         var container = el.getBoundingClientRect();
