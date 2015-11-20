@@ -27,32 +27,6 @@
     text-align: center;
 }
 
-/*table.d3sheet {
-    width: 100%;
-    height: 100%;
-    border-spacing: 0;
-    table-layout: fixed;
-    font: normal 13px arial,sans-serif;
+.d3sheet th {
+    z-index: 100;
 }
-
-table.d3sheet th {
-    background: #f3f3f3;
-    border: 1px solid #cccccc;
-    border-top-color: #c0c0c0;
-    border-right-width: 0;
-    text-align: center;
-    padding: 8px;
-    font: normal 13px arial,sans-serif;
-}
-
-table.d3sheet td {
-    border: 1px solid #dadada;
-    border-right-width: 0;
-    border-top-width: 0;
-    font: normal 13px arial,sans-serif;
-    padding: 8px;
-    background: white;
-}
-
-
-*/

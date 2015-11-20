@@ -45,33 +45,23 @@
                 return [ scroll[ 0 ], scroll[ 1 ] ]; // copy
             }
 
-            var col = Math.min( this.columns().length - 1, Math.max( 0, xy[ 0 ] ) );
-            var row = xy[ 1 ];
+            var x = Math.min( this.columns().length - 1, Math.max( 0, xy[ 0 ] ) );
+            var y = Math.max( 0, xy[ 1 ] );
+
+            window.cancelAnimationFrame( scrollAnimFrame );
+
+            if ( x == scroll[ 0 ] && y == scroll[ 1 ] ) {
+                return this;
+            }
 
             // changing the dom will only take place on the next animation
             // frame in order to throttle the ui repaints while the user scrolls
-            window.cancelAnimationFrame( scrollAnimFrame );
             scrollAnimFrame = requestAnimationFrame( function () {
-                scroll = [ col, row ];
+                scroll = [ x, y ];
+                scrollTo( el, x, y );
+            });
 
-                // find the relevant header column element
-                var headers = el.querySelectorAll( "th" );
-                var column = headers[ col + 1 ].getBoundingClientRect();
-                var container = el.getBoundingClientRect();
-                var rowsn = headers[ 0 ].getBoundingClientRect();
-                var left = el.scrollLeft 
-                    + column.left 
-                    - container.left 
-                    - rowsn.width;
-
-                var rows = el.querySelectorAll( "th:first-child,td:first-child" );
-                [].forEach.call( rows, function ( row ) {
-                    row.style.position = "relative";
-                    row.style.left = ( +row.style.left || 0 ) + left + "px";
-                })
-
-                el.scrollLeft = left;
-            })
+            return this;
         }
 
         return d3sheet
@@ -80,14 +70,6 @@
     function draw( that, el, data ) {
         if ( !el.__d3sheet ) {
             el.addEventListener( "mousewheel", onMouseWheel() )
-
-            // el.addEventListener( "scroll", function ( ev ) {
-                // console.log( "SCROLL" )
-                // scroll by dragging the scroll bar,
-                // TODO: check the change in scrollLeft to apply
-                // our own snap-scroll
-                // this.scrollLeft = 0;
-            // })
         }
         el.__d3sheet = that;
 
@@ -152,26 +134,73 @@
     }
 
     function onMouseWheel () {
-        var deltaX = 0;
+        var deltaX = 0, deltaY = 0;
         return function ( ev ) {
             ev.preventDefault();
             ev.stopPropagation();
-            deltaX += ev.deltaX;
 
-            debug( "MouseWheel X:", deltaX );
+            deltaX += ev.deltaX;
+            deltaY += ev.deltaY;
+
+            debug( "MouseWheel", "X:", deltaX, "Y:", deltaY );
+            var scroll = this.__d3sheet.scroll();
             if ( deltaX > 15 ) {
-                var scroll = this.__d3sheet.scroll();
-                this.__d3sheet.scroll( [ ++scroll[ 0 ], scroll[ 1 ] ] );
+                scroll[ 0 ] += 1;
                 deltaX = 0;
             } else if ( deltaX < -15 ) {
-                var scroll = this.__d3sheet.scroll();
-                this.__d3sheet.scroll( [ --scroll[ 0 ], scroll[ 1 ] ] );
+                scroll[ 0 ] -= 1;
                 deltaX = 0;
             }
+
+            if ( deltaY > 15 ) {
+                scroll[ 1 ] += 1;
+                deltaY = 0;
+            } else if ( deltaY < -15 ) {
+                scroll[ 1 ] -= 1;
+                deltaY = 0;
+            }
+
+            this.__d3sheet.scroll( scroll );
+
         }
     }
 
-    window.d3sheet.debug = false;
+    function scrollTo( el, x, y ) {
+        var headers = el.querySelectorAll( "th" );
+        var column = headers[ x + 1 ].getBoundingClientRect();
+        var container = el.getBoundingClientRect();
+        var rowsn = headers[ 0 ].getBoundingClientRect();
+        var left = el.scrollLeft 
+            + column.left 
+            - container.left 
+            - rowsn.width;
+
+        var rows = el.querySelectorAll( "th:first-child,td:first-child" );
+        [].forEach.call( rows, function ( row ) {
+            row.style.position = "relative";
+            row.style.left = ( +row.style.left || 0 ) + left + "px";
+        })
+
+        el.scrollLeft = left;
+
+        // find the relevant row element
+        var row = el.querySelector( "tbody > tr:nth-child(" + ( y + 1 ) + ")" );
+        var rect = row.getBoundingClientRect();
+        var top = el.scrollTop
+            + rect.top 
+            - container.top
+            - column.height;
+
+        [].forEach.call( headers, function ( row ) {
+            row.style.position = "relative";
+            row.style.top = ( +row.style.top || 0 ) + top + "px";
+        })
+
+        el.scrollTop = top;
+    }
+
+    // debug
+    window.d3sheet.debug = true;
     function debug() {
         if ( window.d3sheet.debug ) {
             console.log.apply( console, arguments );
