@@ -63,6 +63,7 @@
                     if ( !arguments.length ) {
                         return selection.end;
                     }
+
                     selection.end = xy;
                     // debug( "Selection", "End:", xy );
 
@@ -129,6 +130,10 @@
             w: 2000
         });
 
+        columns.forEach( function ( col, i ) {
+            col.coln = i;
+        })
+
         var colwidths = columns.map( function ( d ) {
             return d.w || 0;
         });
@@ -180,8 +185,9 @@
             this.__selecting = true;
             ev.preventDefault();
             var datum = d3.select( ev.target ).datum();
+
             this.__d3sheet.selection()
-                .start([ datum.coln, datum.rown ]);
+                .start([ datum.coln || 0, datum.rown || 0 ])
         }
     }
 
@@ -191,7 +197,7 @@
             ev.preventDefault();
             var datum = d3.select( ev.target ).datum();
             this.__d3sheet.selection()
-                .end([ datum.coln, datum.rown ]);
+                .end([ datum.coln || Infinity, datum.rown || Infinity ]);
         }
     }
 
@@ -203,7 +209,7 @@
             ev.preventDefault();
             var datum = d3.select( ev.target ).datum();
             this.__d3sheet.selection()
-                .end([ datum.coln, datum.rown ]);
+                .end([ datum.coln || Infinity, datum.rown || Infinity ]);
         }
     }
 
@@ -259,7 +265,7 @@
         var selector = [
             "tbody > tr",
             ":nth-child(n+" + ( 1 + starty ) + ")",
-            ":nth-child(-n+" + ( 1 + endy ) + ")"
+            endy == Infinity ? "" : ":nth-child(-n+" + ( 1 + endy ) + ")"
         ].join( "" );
         var rows = el.selectAll( selector );
         
@@ -268,7 +274,7 @@
         var selector = [
             "*",
             ":nth-child(n+" + ( 1 + startx ) + ")",
-            ":nth-child(-n+" + ( 1 + endx ) + ")"
+            endx == Infinity ? "" : ":nth-child(-n+" + ( 1 + endx ) + ")"
         ].join( "" );
         var cells = rows.selectAll( selector );
         
