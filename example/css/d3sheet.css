@@ -3,6 +3,8 @@
 }
 
 .d3sheet table {
+    position: relative;
+    left: 0px;
     table-layout: fixed;
     border-spacing: 0;
     padding: 0;
@@ -29,6 +31,20 @@
 
 .d3sheet th {
     z-index: 100;
+    position: relative;
+}
+
+.d3sheet th.resizable:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -11px;
+    bottom: 0;
+    width: 20px;
+    cursor: ew-resize;
+    z-index: 1000;
+    background: #4d90fe;
 }
 
 .d3sheet td.selected {
