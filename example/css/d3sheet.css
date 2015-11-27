@@ -30,21 +30,26 @@
 }
 
 .d3sheet th {
-    z-index: 100;
     position: relative;
 }
 
-.d3sheet th.resizable:before {
+.d3sheet th:after {
     content: "";
     display: block;
     position: absolute;
+    opacity: 0;
     top: 0;
-    left: -11px;
+    right: -3px;
     bottom: 0;
-    width: 20px;
+    width: 6px;
     cursor: ew-resize;
     z-index: 1000;
     background: #4d90fe;
+    transition: opacity .15s;
+}
+
+.d3sheet th.resizable:after {
+    opacity: 1;
 }
 
 .d3sheet td.selected {

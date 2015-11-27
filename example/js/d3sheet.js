@@ -1,5 +1,6 @@
 (function () {
     var SCROLL_SENSITIVITY = 15;
+    var RESIZE_SENSITIVITY = 20;
 
     window.d3sheet = function () {
         var columns = [];
@@ -109,22 +110,20 @@
     }
 
     function draw( that, el, data ) {
-        if ( !el.__d3sheet ) {
-            el.addEventListener( "mousewheel", onMouseWheel() )
-
-            // el.addEventListener( "mousedown", resizeMouseDown() )
-            // el.addEventListener( "mouseup", resizeMouseUp() )
-            el.addEventListener( "mousemove", resizeMouseMove() )
-
-            el.addEventListener( "mousedown", selectMouseDown() )
-            el.addEventListener( "mouseup", selectMouseUp() )
-            el.addEventListener( "mousemove", selectMouseMove() )
-
-        }
-        el.__d3sheet = that;
-
         el = d3.select( el )
             .classed( "d3sheet", true );
+
+        if ( !el.node().__d3sheet ) {
+            el.on( "mousewheel", onMouseWheel() );
+
+            // el.on( "mousedown", onMouseDown() );
+            // el.on( "mouseup", onMouseUp() );
+            // el.on( "mousemove", onMouseMove() );
+
+            init( el.node() );
+        }
+
+        el.node().__d3sheet = that;
 
         var columns = [].concat( that.columns() )
         columns.unshift({
@@ -159,8 +158,7 @@
         var headers = rows.selectAll( "th" )
             .data( columns )
         headers.enter().append( "th" )
-            .style( "position", "relative" )
-            .html( "<span></span>" )
+            .style( "position", "relative" );
         headers
             .text( function ( d ) {
                 return d.name || ""
@@ -191,97 +189,112 @@
             })
     }
 
-    function selectMouseDown () {
-        return function ( ev ) {
-            if ( this.__resizing ) {
-                return;
-            }
-            this.__selecting = true;
-            ev.preventDefault();
-            var datum = d3.select( ev.target ).datum();
+    function init( el ) {
+        var options = { el: el };
 
-            this.__d3sheet.selection()
-                .start([ datum.coln || 0, datum.rown || 0 ])
-        }
-    }
-
-    function selectMouseUp () {
-        return function ( ev ) {
-            this.__selecting = false;
-            // ev.preventDefault();
-            var datum = d3.select( ev.target ).datum();
-            this.__d3sheet.selection()
-                .end([ datum.coln || Infinity, datum.rown || Infinity ]);
-        }
-    }
-
-    function selectMouseMove () {
-        return function ( ev ) {
-            if ( !this.__selecting ) {
-                return
-            }
-            // ev.preventDefault();
-            var datum = d3.select( ev.target ).datum();
-            this.__d3sheet.selection()
-                .end([ datum.coln || Infinity, datum.rown || Infinity ]);
-        }
-    }
-
-    function resizeMouseDown() {
-        return function ( ev ) {
-            if ( this.__selecting ) {
-                return;
-            }
-
-            if ( ev.target.tagName != "TH" ) {
-                return;
-            }
-
+        // resize
+        el.addEventListener( "mousemove", function ( ev ) {
             ev.preventDefault()
-            this.__resizing = { 
-                x: ev.clientX,
-                w: parseInt( ev.target.style.width ),
-                el: ev.target
-            };
+            resizeMove( options, ev )
+        });
+        el.addEventListener( "mousedown", function ( ev ) {
+            resizeDown( options, ev )
+        });
+        el.addEventListener( "mouseup", function ( ev ) {
+            resizeUp( options, ev )
+        });
+
+        // select
+        el.addEventListener( "mousemove", function ( ev ) {
+            selectMove( options, ev );
+        })
+        el.addEventListener( "mousedown", function ( ev ) {
+            selectDown( options, ev );
+        })
+        el.addEventListener( "mouseup", function ( ev ) {
+            selectUp( options, ev );
+        })
+    }
+
+    function resizeMove( options, ev ) {
+        if ( options.resizing ) {
+            var dx = ev.clientX - options.resizing.x;
+            var w = options.resizing.w + dx;
+            options.resizable.style.width = w + "px";
+            return;
+        }
+
+
+        var th = parentSelector( ev.target, ".d3sheet th" );
+        var resizable;
+        if ( th ) {
+            var rect = th.getBoundingClientRect();
+            var left = ev.clientX - rect.left;
+            var right = rect.width - left;
+
+            if ( right < RESIZE_SENSITIVITY ) {
+                resizable = th;
+            }
+        }
+
+        if ( options.resizable && options.resizable != resizable ) {
+            options.resizable.classList.remove( "resizable" );
+            options.resizable = null;
+        }
+
+        if ( resizable ) {
+            resizable.classList.add( "resizable" );
+            options.resizable = resizable;
         }
     }
 
-    function resizeMouseUp () {
-        return function ( ev ) {
-            this.__resizing = null;
+    function resizeDown ( options, ev ) {
+        if ( !options.resizable ) {
+            return;
+        }
+
+        options.resizing = {
+            w: parseInt( options.resizable.style.width ),
+            x: ev.clientX
         }
     }
 
-    function resizeMouseMove() {
-        return function ( ev ) {
-            if ( ev.target.tagName != "TH" ) {
-                return;
-            }
+    function resizeUp ( options ) {
+        options.resizing = null;
+    }
 
-            if ( this.__selecting ) {
-                return;
-            }
+    function selectDown ( options, ev ) {
+        if ( options.resizing ) {
+            return 
+        }
+        options.__selecting = true;
+        ev.preventDefault();
+        var datum = d3.select( ev.target ).datum();
+        options.el.__d3sheet.selection()
+            .start([ datum.coln || 0, datum.rown || 0 ])
+    }
 
-            var rect = ev.target.getBoundingClientRect();
-            var x = ev.clientX - rect.left;
+    function selectMove ( options, ev ) {
+        if ( options.__selecting ) {
+            var datum = d3.select( ev.target ).datum();
+            options.el.__d3sheet.selection()
+                .end([ datum.coln || Infinity, datum.rown || Infinity ]);
+        }
+    }
 
-            // ev.target.classList.toggle( "resizable", x > 190 );
-
-            // if ( this.__resizing ) {
-            //     var x = ev.clientX - this.__resizing.x;
-            //     this.__resizing.el.style.width = ( this.__resizing.w + x ) + "px";
-            //     return
-            // }
-
-            // var rect = ev.target.getBoundingClientRect();
-            // var x = ev.clientX - rect.left;
-            // ev.target.classList.toggle( "resizable", x > 190 );
+    function selectUp ( options, ev ) {
+        if ( options.__selecting ) {
+            options.__selecting = false;
+            var datum = d3.select( ev.target ).datum();
+            options.el.__d3sheet.selection()
+                .end([ datum.coln || Infinity, datum.rown || Infinity ]);
         }
     }
 
     function onMouseWheel () {
         var deltaX = 0, deltaY = 0;
         return function ( ev ) {
+            var ev = d3.event;
             ev.preventDefault();
             ev.stopPropagation();
 
@@ -411,6 +424,15 @@
     function debug() {
         if ( window.d3sheet.debug ) {
             console.log.apply( console, arguments );
+        }
+    }
+
+    function parentSelector( el, selector ) {
+        while ( el && el.matches ) {
+            if ( el.matches( selector ) ) {
+                return el;
+            }
+            el = el.parentNode;
         }
     }
 
