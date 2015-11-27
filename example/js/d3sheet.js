@@ -260,6 +260,10 @@
     }
 
     function resizeUp ( options ) {
+        if ( options.resizing ) {
+            var col = d3.select( options.resizable ).datum();
+            col.w = parseInt( options.resizable.style.width );
+        }
         options.resizing = null;
     }
 
@@ -284,11 +288,11 @@
 
     function selectUp ( options, ev ) {
         if ( options.__selecting ) {
-            options.__selecting = false;
             var datum = d3.select( ev.target ).datum();
             options.el.__d3sheet.selection()
                 .end([ datum.coln || Infinity, datum.rown || Infinity ]);
         }
+        options.__selecting = false;
     }
 
     function onMouseWheel () {
