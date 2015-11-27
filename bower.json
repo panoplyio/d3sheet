@@ -1,0 +1,27 @@
+{
+  "name": "websheet",
+  "main": "websheet.js",
+  "homepage": "https://github.com/panoplyio/websheet",
+  "authors": [
+    "Roi Avinoam <avinoamr@gmail.com>"
+  ],
+  "description": "D3 customizable component for viewing data in a spread-sheet look and feel",
+  "moduleType": [],
+  "keywords": [
+    "sheet",
+    "spreadsheet",
+    "d3"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "example"
+  ],
+  "dependencies": {
+    "d3": "~3.5.9"
+  }
+}
