@@ -1,4 +1,4 @@
-# d3sheet
+# websheet
 D3 customizable component for viewing data in a spread-sheet look and feel
 
 
@@ -7,5 +7,5 @@ D3 customizable component for viewing data in a spread-sheet look and feel
 * Sticky header row and row-numbers column
 * Rectangular selections
 * Resize columns
-* Reorder columns
-* Infinite scrolling or pagination
+* [TODO] Reorder columns
+* [TODO] Infinite scrolling or pagination

@@ -2,14 +2,14 @@
     var SCROLL_SENSITIVITY = 15;
     var RESIZE_SENSITIVITY = 20;
 
-    window.d3sheet = function () {
+    window.websheet = function () {
         var columns = [];
 
-        function d3sheet( selection ) { 
-            return d3sheet.draw( selection ) 
+        function websheet( selection ) { 
+            return websheet.draw( selection ) 
         }
 
-        d3sheet.columns = function ( _columns ) { 
+        websheet.columns = function ( _columns ) { 
             if ( arguments.length == 0 ) {
                 return columns 
             }
@@ -17,7 +17,7 @@
             return this;
         }
 
-        d3sheet.column = function ( name, accessor ) {
+        websheet.column = function ( name, accessor ) {
             if ( !accessor ) {
                 accessor = function ( d ) {
                     return d[ name ]
@@ -32,21 +32,21 @@
         }
 
         var el;
-        d3sheet.draw = function ( selection ) {
+        websheet.draw = function ( selection ) {
             if ( selection instanceof Element ) {
                 selection = d3.selectAll( [ selection ] );
             }
 
             selection.each( function ( data ) { 
                 el = this;
-                draw( d3sheet, this, data ); 
+                draw( websheet, this, data ); 
             })
             return this;
         }
 
         var selection = { start: null, end: null }
         var selectAnimFrame;
-        d3sheet.selection = function () {
+        websheet.selection = function () {
             return {
                 start: function ( xy ) {
                     if ( !arguments.length ) {
@@ -82,7 +82,7 @@
 
         var scroll = [ 1, 1 ];
         var scrollAnimFrame;
-        d3sheet.scroll = function ( xy ) {
+        websheet.scroll = function ( xy ) {
             if ( arguments.length == 0 ) {
                 return [ scroll[ 0 ], scroll[ 1 ] ]; // copy
             }
@@ -106,14 +106,14 @@
             return this;
         }
 
-        return d3sheet
+        return websheet
     }
 
     function draw( that, el, data ) {
         el = d3.select( el )
-            .classed( "d3sheet", true );
+            .classed( "websheet", true );
 
-        if ( !el.node().__d3sheet ) {
+        if ( !el.node().__websheet ) {
             el.on( "mousewheel", onMouseWheel() );
 
             // el.on( "mousedown", onMouseDown() );
@@ -123,7 +123,7 @@
             init( el.node() );
         }
 
-        el.node().__d3sheet = that;
+        el.node().__websheet = that;
 
         var columns = [].concat( that.columns() )
         columns.unshift({
@@ -225,7 +225,7 @@
         }
 
 
-        var th = parentSelector( ev.target, ".d3sheet th" );
+        var th = parentSelector( ev.target, ".websheet th" );
         var resizable;
         if ( th ) {
             var rect = th.getBoundingClientRect();
@@ -274,14 +274,14 @@
         options.__selecting = true;
         ev.preventDefault();
         var datum = d3.select( ev.target ).datum();
-        options.el.__d3sheet.selection()
+        options.el.__websheet.selection()
             .start([ datum.coln || 0, datum.rown || 0 ])
     }
 
     function selectMove ( options, ev ) {
         if ( options.__selecting ) {
             var datum = d3.select( ev.target ).datum();
-            options.el.__d3sheet.selection()
+            options.el.__websheet.selection()
                 .end([ datum.coln || Infinity, datum.rown || Infinity ]);
         }
     }
@@ -289,7 +289,7 @@
     function selectUp ( options, ev ) {
         if ( options.__selecting ) {
             var datum = d3.select( ev.target ).datum();
-            options.el.__d3sheet.selection()
+            options.el.__websheet.selection()
                 .end([ datum.coln || Infinity, datum.rown || Infinity ]);
         }
         options.__selecting = false;
@@ -306,7 +306,7 @@
             deltaY += ev.deltaY;
 
             // debug( "MouseWheel", "X:", deltaX, "Y:", deltaY );
-            var scroll = this.__d3sheet.scroll();
+            var scroll = this.__websheet.scroll();
             if ( deltaX > SCROLL_SENSITIVITY ) {
                 scroll[ 0 ] += 1;
                 deltaX = 0;
@@ -323,7 +323,7 @@
                 deltaY = 0;
             }
 
-            this.__d3sheet.scroll( scroll );
+            this.__websheet.scroll( scroll );
         }
     }
 
@@ -424,9 +424,9 @@
     }
 
     // debug
-    window.d3sheet.debug = true;
+    window.websheet.debug = true;
     function debug() {
-        if ( window.d3sheet.debug ) {
+        if ( window.websheet.debug ) {
             console.log.apply( console, arguments );
         }
     }

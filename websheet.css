@@ -1,8 +1,8 @@
-.d3sheet {
+.websheet {
     overflow: auto;
 }
 
-.d3sheet table {
+.websheet table {
     position: relative;
     left: 0px;
     table-layout: fixed;
@@ -12,8 +12,8 @@
     height: 100%
 }
 
-.d3sheet th,
-.d3sheet td {
+.websheet th,
+.websheet td {
     background: white;
     border: 0px solid #dadada;
     border-right-width: 1px;
@@ -22,18 +22,18 @@
     padding: 8px;
 }
 
-.d3sheet th,
-.d3sheet td:first-child {
+.websheet th,
+.websheet td:first-child {
     background: #f3f3f3;
     border-color: #cccccc;
     text-align: center;
 }
 
-.d3sheet th {
+.websheet th {
     position: relative;
 }
 
-.d3sheet th:after {
+.websheet th:after {
     content: "";
     display: block;
     position: absolute;
@@ -48,15 +48,15 @@
     transition: opacity .15s;
 }
 
-.d3sheet th.resizable:after {
+.websheet th.resizable:after {
     opacity: 1;
 }
 
-.d3sheet td.selected {
+.websheet td.selected {
     background: #ecf3ff;
 }
 
-.d3sheet th.selected,
-.d3sheet td.selected:first-child {
+.websheet th.selected,
+.websheet td.selected:first-child {
     background: #dddddd;
 }

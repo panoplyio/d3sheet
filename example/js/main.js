@@ -1,5 +1,5 @@
 (function() {
-    var d3sheet = window.d3sheet()
+    var websheet = window.websheet()
         .column( "name" )
         .column( "B" )
         .column( "C" )
@@ -61,8 +61,8 @@
             { "name": "Alice", "B": 100 },
             { "name": "Bob", "B": 200 },
         ])
-        .call( d3sheet )
+        .call( websheet )
 
 
-    window.__debug = d3sheet;
+    window.__debug = websheet;
 })();
