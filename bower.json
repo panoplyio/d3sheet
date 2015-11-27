@@ -9,8 +9,7 @@
   "moduleType": [],
   "keywords": [
     "sheet",
-    "spreadsheet",
-    "d3"
+    "spreadsheet"
   ],
   "license": "MIT",
   "ignore": [
