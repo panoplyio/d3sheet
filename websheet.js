@@ -171,6 +171,7 @@
         var tbody = table.select( "tbody" );
         var rows = tbody.selectAll( "tr" )
             .data( data );
+        row.exit.remove();
         rows.enter().append( "tr" );
         var cells = rows.selectAll( "td" )
             .data( function ( d, i ) {
