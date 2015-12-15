@@ -20,6 +20,9 @@
     border-bottom-width: 1px;
     font: normal 13px arial,sans-serif;
     padding: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .websheet th,

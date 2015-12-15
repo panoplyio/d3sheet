@@ -221,7 +221,7 @@
         if ( options.resizing ) {
             var dx = ev.clientX - options.resizing.x;
             var w = options.resizing.w + dx;
-            options.resizable.style.width = w + "px";
+            options.resizable.style.width = Math.max( w, 14 ) + "px";
             return;
         }
 
