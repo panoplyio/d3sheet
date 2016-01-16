@@ -39,9 +39,31 @@
 
             selection.each( function ( data ) { 
                 el = this;
-                draw( websheet, this, data ); 
+                draw( websheet, this, data );
+                var max = getBounderies( websheet, this );
+                websheet.__maxx = max.x;
+                websheet.__maxy = max.y;
             })
             return this;
+        }
+
+        function getBounderies( that, el ) {
+            var rect = el.getBoundingClientRect();
+            var rows = d3.select( el )
+                .selectAll( 'tbody > tr' )[ 0 ];
+
+            var height = Math.floor( rect.height );
+            var maxy;
+            for ( maxy = rows.length ; maxy >= 0 ; maxy -= 1 ) {
+                height -= rows[ maxy - 1 ].getBoundingClientRect().height;
+                if ( height <= 0 ) {
+                    break
+                }
+            }
+
+            maxy += 1; // extra room for 1 header row
+
+            return { x: that.columns().length - 1, y: maxy }
         }
 
         var selection = { start: null, end: null }
@@ -83,12 +105,13 @@
         var scroll = [ 1, 1 ];
         var scrollAnimFrame;
         websheet.scroll = function ( xy ) {
+            var rows = d3.select( el ).datum();
             if ( arguments.length == 0 ) {
                 return [ scroll[ 0 ], scroll[ 1 ] ]; // copy
             }
 
-            var x = Math.min( this.columns().length - 1, Math.max( 1, xy[ 0 ] ) );
-            var y = Math.max( 1, xy[ 1 ] );
+            var x = Math.min( this.__maxx, Math.max( 1, xy[ 0 ] ) );
+            var y = Math.min( this.__maxy, Math.max( 1, xy[ 1 ] ) );
 
             window.cancelAnimationFrame( scrollAnimFrame );
 
@@ -187,7 +210,7 @@
         cells
             .text( function ( d ) {
                 return d.v
-            })
+            });
     }
 
     function init( el ) {
