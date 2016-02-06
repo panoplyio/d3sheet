@@ -61,7 +61,7 @@
                 }
             }
 
-            maxy += 1; // extra room for 1 header row
+            maxy += 2; // extra room for 1 header row
 
             return { x: that.columns().length - 1, y: maxy }
         }
