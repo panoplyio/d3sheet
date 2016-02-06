@@ -54,7 +54,7 @@
 
             var height = Math.floor( rect.height );
             var maxy;
-            for ( maxy = rows.length ; maxy >= 0 ; maxy -= 1 ) {
+            for ( maxy = rows.length ; maxy > 0 ; maxy -= 1 ) {
                 height -= rows[ maxy - 1 ].getBoundingClientRect().height;
                 if ( height <= 0 ) {
                     break

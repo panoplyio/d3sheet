@@ -1,5 +1,6 @@
 {
   "name": "websheet",
+  "version": "1.0.9",
   "main": "websheet.js",
   "homepage": "https://github.com/panoplyio/websheet",
   "authors": [
