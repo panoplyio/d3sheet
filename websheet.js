@@ -5,13 +5,13 @@
     window.websheet = function () {
         var columns = [];
 
-        function websheet( selection ) { 
-            return websheet.draw( selection ) 
+        function websheet( selection ) {
+            return websheet.draw( selection )
         }
 
-        websheet.columns = function ( _columns ) { 
+        websheet.columns = function ( _columns ) {
             if ( arguments.length == 0 ) {
-                return columns 
+                return columns
             }
             columns = _columns;
             return this;
@@ -23,9 +23,9 @@
                     return d[ name ]
                 }
             }
-            columns.push({ 
-                name: name, 
-                accessor: accessor, 
+            columns.push({
+                name: name,
+                accessor: accessor,
                 w: 200
             });
             return this;
@@ -37,7 +37,7 @@
                 selection = d3.selectAll( [ selection ] );
             }
 
-            selection.each( function ( data ) { 
+            selection.each( function ( data ) {
                 el = this;
                 draw( websheet, this, data );
                 var max = getBounderies( websheet, this );
@@ -149,12 +149,16 @@
         el.node().__websheet = that;
 
         var columns = [].concat( that.columns() )
+
+        // row-number column
         columns.unshift({
             accessor: function ( d, i ) {
-                return i + 1;
+                return d === undefined ? '' : i + 1;
             },
             w: 40
         })
+
+        // extra right column to keep the display wide.
         columns.push({
             accessor: function () {},
             w: 2000
@@ -168,6 +172,10 @@
         var colwidths = columns.map( function ( d ) {
             return d.w || 0;
         });
+
+        // extra full height row.
+        data = [].concat(data)
+        data.push(undefined)
 
         var table = el.selectAll( "table" )
             .data( [ data ] );
@@ -196,21 +204,22 @@
             .data( data );
         rows.exit().remove();
         rows.enter().append( "tr" );
+        rows.style('height', (d) => d === undefined ? 'auto' : '')
         var cells = rows.selectAll( "td" )
             .data( function ( d, i ) {
                 return columns.map( function ( col, j ) {
                     return {
                         rown: i + 1,
                         coln: j,
-                        v: col.accessor( d, i ),
+                        v: d === undefined ? '' : col.accessor( d, i ),
                     }
                 })
             })
-        cells.enter().append( "td" );
+        cells.enter().append( "td" )
         cells
             .text( function ( d ) {
                 return d.v
-            });
+            })
     }
 
     function init( el ) {
@@ -293,7 +302,7 @@
 
     function selectDown ( options, ev ) {
         if ( options.resizing ) {
-            return 
+            return
         }
         options.__selecting = true;
         ev.preventDefault();
@@ -385,7 +394,7 @@
             endy == Infinity ? "" : ":nth-child(-n+" + ( endy ) + ")"
         ].join( "" );
         var rows = el.selectAll( selector );
-        
+
         // find the relevant columns within these rows in the range
         // of startx-endx
         var selector = [
@@ -394,7 +403,7 @@
             endx == Infinity ? "" : ":nth-child(-n+" + ( endx + 1 ) + ")"
         ].join( "" );
         var cells = rows.selectAll( selector );
-        
+
         // add the relevant headers to the selection
         var headers = el.select( "thead > tr" )
             .selectAll( selector );
@@ -418,9 +427,9 @@
         var column = headers[ x + 1 ].getBoundingClientRect();
         var container = el.getBoundingClientRect();
         var rowsn = headers[ 0 ].getBoundingClientRect();
-        var left = el.scrollLeft 
-            + column.left 
-            - container.left 
+        var left = el.scrollLeft
+            + column.left
+            - container.left
             - rowsn.width;
 
         var rows = el.querySelectorAll( "th:first-child,td:first-child" );
@@ -435,7 +444,7 @@
         var row = el.querySelector( "tbody > tr:nth-child(" + ( y + 1 ) + ")" );
         var rect = row.getBoundingClientRect();
         var top = el.scrollTop
-            + rect.top 
+            + rect.top
             - container.top
             - column.height;
 
@@ -478,23 +487,22 @@
     var vendors = ['ms', 'moz', 'webkit', 'o'];
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
                                    || window[vendors[x]+'CancelRequestAnimationFrame'];
     }
- 
+
     if (!window.requestAnimationFrame)
         window.requestAnimationFrame = function(callback, element) {
             var currTime = new Date().getTime();
             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
               timeToCall);
             lastTime = currTime + timeToCall;
             return id;
         };
- 
+
     if (!window.cancelAnimationFrame)
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);
         };
 }());
-

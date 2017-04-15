@@ -12,6 +12,10 @@
     height: 100%
 }
 
+.websheet tr {
+    height: 10px;
+}
+
 .websheet th,
 .websheet td {
     background: white;
