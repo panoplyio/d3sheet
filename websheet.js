@@ -225,6 +225,19 @@
     function init( el ) {
         var options = { el: el };
 
+        document.addEventListener('click', function(ev) {
+            if (ev.__inWebsheet === el) {
+                return
+            }
+
+            // de-select all.
+            options.el.__websheet.selection().end(null)
+        })
+
+        el.addEventListener('click', function(ev) {
+            ev.__inWebsheet = this
+        })
+
         // resize
         el.addEventListener( "mousemove", function ( ev ) {
             ev.preventDefault()
