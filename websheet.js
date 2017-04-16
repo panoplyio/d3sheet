@@ -218,7 +218,9 @@
             .data( data );
         rows.exit().remove();
         rows.enter().append( "tr" );
-        rows.style('height', (d) => d === undefined ? 'auto' : '')
+        rows.style('height', function (d) {
+            return d === undefined ? 'auto' : ''
+        })
         var cells = rows.selectAll( "td" )
             .data( function ( d, i ) {
                 return columns.map( function ( col, j ) {
@@ -235,7 +237,7 @@
             .text( function ( d ) {
                 return d.v
             })
-            .attr('class', (d) => d.cls)
+            .attr('class', function (d) { return d.cls })
     }
 
     function init( el ) {
