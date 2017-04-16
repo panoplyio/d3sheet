@@ -129,7 +129,7 @@
             return this;
         }
 
-        var rowNums = false;
+        var rowNums = true;
         websheet.rowNumbers = function(enabled) {
             if (arguments.length === 0) {
                 return rowNums
