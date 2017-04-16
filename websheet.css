@@ -30,7 +30,7 @@
 }
 
 .websheet th,
-.websheet td:first-child {
+.websheet td.row-number {
     background: #f3f3f3;
     border-color: #cccccc;
     text-align: center;

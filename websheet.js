@@ -129,6 +129,16 @@
             return this;
         }
 
+        var rowNums = false;
+        websheet.rowNumbers = function(enabled) {
+            if (arguments.length === 0) {
+                return rowNums
+            }
+
+            rowNums = enabled
+            return rowNums
+        }
+
         return websheet
     }
 
@@ -151,11 +161,12 @@
         var columns = [].concat( that.columns() )
 
         // row-number column
-        columns.unshift({
+        that.rowNumbers() && columns.unshift({
             accessor: function ( d, i ) {
                 return d === undefined ? '' : i + 1;
             },
-            w: 40
+            w: 40,
+            cls: 'row-number'
         })
 
         // extra right column to keep the display wide.
@@ -197,6 +208,9 @@
             .style( "width", function ( d ) {
                 return d.w + "px"
             })
+            .attr('class', function (d) {
+                return d.cls
+            })
 
         // rows
         var tbody = table.select( "tbody" );
@@ -212,6 +226,7 @@
                         rown: i + 1,
                         coln: j,
                         v: d === undefined ? '' : col.accessor( d, i ),
+                        cls: col.cls
                     }
                 })
             })
@@ -220,6 +235,7 @@
             .text( function ( d ) {
                 return d.v
             })
+            .attr('class', (d) => d.cls)
     }
 
     function init( el ) {
