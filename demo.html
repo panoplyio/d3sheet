@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+    web-sheet {
+        height: 100%;
+        border: 1px solid #dadada;
+    }
+    </style>
+
+    <script src="websheet-new.js" charset="utf-8"></script>
+</head>
+<body>
+    <web-sheet></web-sheet>
+
+    <script>
+    var ws = document.querySelector('web-sheet')
+    ws.data = [
+        { "name": "Alice", "B": 100 },// "C": 100, "D": 100, "E": 100 },
+        { "name": "Bob", "B": 200 },
+        { "name": "Alice", "B": 100 },
+        { "name": "Bob", "B": 200 },
+    ]
+    </script>
+</body>
+</html>
