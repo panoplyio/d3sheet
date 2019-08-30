@@ -4,40 +4,96 @@
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <title></title>
-        <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.9/d3.js"></script>
 
+        <!-- WEBSHEET DEPENDENCIES -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.9/d3.js"></script>
         <link rel="stylesheet" href="../websheet.css">
         <script src="../websheet.js"></script>
+
+        <!-- SET UP THE VIEWPORT -->
+        <style>
+        #sheet {
+            margin: 50px auto;
+            width: 80%;
+            height: 300px;
+        }
+        </style>
     </head>
     <body>
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-
-        <!-- Add your site or application content here -->
         <div id="sheet"></div>
+        <script>
+        var websheet = window.websheet()
+            .column( "name" )
+            .column( "B" )
+            .column( "C" )
+            .column( "D" )
+            .column( "E" )
+            .column( "F" )
+            .column( "G" )
+            .column( "H" )
+            .column( "I" )
+
+        d3.select( "#sheet" )
+            .datum([
+                { "name": "Alice", "B": 100 },
+                { "name": "Bob", "B": 200 },
+                { "name": "Alice", "B": 300 },
+                { "name": "Bob", "B": 400 },
+                { "name": "Alice", "B": 500 },
+                { "name": "Bob", "B": 600 },
+                { "name": "Alice", "B": 700 },
+                { "name": "Bob", "B": 800 },
+                { "name": "Alice", "B": 900 },
+                { "name": "Bob", "B": 1000 },
+                { "name": "Alice", "B": 1100 },
+                { "name": "Bob", "B": 1200 },
+                { "name": "Alice", "B": 1300 },
+                { "name": "Bob", "B": 1400 },
+                { "name": "Alice", "B": 1500 },
+                { "name": "Bob", "B": 1600 },
+                { "name": "Alice", "B": 1700 },
+                { "name": "Bob", "B": 1800 },
+                { "name": "Alice", "B": 1900 },
+                { "name": "Bob", "B": 2000 },
+                { "name": "Alice", "B": 2100 },
+                { "name": "Bob", "B": 2200 },
+                { "name": "Alice", "B": 2300 },
+                { "name": "Bob", "B": 2400 },
+                { "name": "Alice", "B": 2500 },
+                { "name": "Bob", "B": 2600 },
+                { "name": "Alice", "B": 2700 },
+                { "name": "Bob", "B": 2800 },
+                { "name": "Alice", "B": 2900 },
+                { "name": "Bob", "B": 3000 },
+                { "name": "Alice", "B": 3100 },
+                { "name": "Bob", "B": 3200 },
+                { "name": "Alice", "B": 3300 },
+                { "name": "Bob", "B": 3400 },
+                { "name": "Alice", "B": 3500 },
+                { "name": "Bob", "B": 3600 },
+                { "name": "Alice", "B": 3700 },
+                { "name": "Bob", "B": 3800 },
+                { "name": "Alice", "B": 3900 },
+                { "name": "Bob", "B": 4000 },
+                { "name": "Alice", "B": 4100 },
+                { "name": "Bob", "B": 4200 },
+                { "name": "Alice", "B": 4300 },
+                { "name": "Bob", "B": 4400 },
+                { "name": "Alice", "B": 4500 },
+                { "name": "Bob", "B": 4600 },
+                { "name": "Alice", "B": 4700 },
+                { "name": "Bob", "B": 4800 },
+            ])
+            .call( websheet )
+        </script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.3.min.js"><\/script>')</script>
         <script src="js/plugins.js"></script>
-        <script src="js/main.js"></script>
-
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='https://www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X','auto');ga('send','pageview');
-        </script>
     </body>
 </html>
