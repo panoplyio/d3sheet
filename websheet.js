@@ -63,7 +63,7 @@
 
             maxy += 1; // extra room for 1 header row
 
-            return { x: that.columns().length - 1, y: maxy }
+            return { x: that.columns().length, y: maxy }
         }
 
         var selection = { start: null, end: null }
