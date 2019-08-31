@@ -479,12 +479,20 @@
             - container.top
             - column.height;
 
+        var prevTop = el.scrollTop
+        el.scrollTop = top;
+        if (el.scrollTop < top) {
+          // overscroll.
+          // revert to keep scroll "snapped" to grid, and
+          // not cut cells mid-way through
+          el.scrollTop = prevTop
+          return
+        }
+
         [].forEach.call( headers, function ( row ) {
             row.style.position = "relative";
             row.style.top = ( +row.style.top || 0 ) + top + "px";
         })
-
-        el.scrollTop = top;
     }
 
     // debug
