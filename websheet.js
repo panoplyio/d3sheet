@@ -40,9 +40,8 @@
             selection.each( function ( data ) {
                 el = this;
                 draw( websheet, this, data );
-                var max = getBounderies( websheet, this );
-                websheet.__maxx = max.x;
-                websheet.__maxy = max.y;
+                websheet.__maxx = -1 // reset scrolling boundaries
+                websheet.__maxy = -1
             })
             return this;
         }
@@ -108,6 +107,14 @@
             var rows = d3.select( el ).datum();
             if ( arguments.length == 0 ) {
                 return [ scroll[ 0 ], scroll[ 1 ] ]; // copy
+            }
+
+            if ( this.__maxy === -1 ) {
+              // re-compute scrolling bounds, based on
+              // the available element height
+              var max = getBounderies( this, el );
+              websheet.__maxx = max.x;
+              websheet.__maxy = max.y;
             }
 
             var x = Math.min( this.__maxx, Math.max( 1, xy[ 0 ] ) );
